@@ -10,7 +10,7 @@
   });
 
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./service-worker.js?v=20260610githubfixed', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('./service-worker.js?v=20260610darkproducts', { updateViaCache: 'none' })
       .then(function (registration) {
         registration.update();
         if (registration.waiting) registration.waiting.postMessage({ type: 'SKIP_WAITING' });

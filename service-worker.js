@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cougar-electronics-cloudflare-clean-20260610githubfixed';
+const CACHE_NAME = 'cougar-electronics-dark-products-20260610darkproducts';
 
 self.addEventListener('install', event => {
   self.skipWaiting();

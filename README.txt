@@ -22,3 +22,5 @@ Cloudflare-only fix: added _headers and updated service-worker cache strategy so
 
 
 GitHub check fix: removed unused legacy assets and bumped CSS/JS/service-worker cache version for Cloudflare. No visual design/layout changes.
+
+Dark products update (20260610darkproducts): the products/collection area is black, product image panels are black, and product card details/control areas are gray with high-contrast white text. CSS/JS query strings and the service-worker cache name were bumped so the update loads fresh after upload.
