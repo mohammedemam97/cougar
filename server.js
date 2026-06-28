@@ -74,15 +74,22 @@ app.post('/api/create-checkout-session', async (request, response) => {
       const selectedColor = String(item.color || product.color).slice(0, 60);
       const selectedStorage = String(product.storage).slice(0, 30);
 
+      const productData = {
+        name: `${product.name} ${selectedStorage}`,
+        description: `${product.status} - ${selectedColor} - ${product.battery}`
+      };
+
+      // Stripe can reject local/non-public image URLs in Checkout Sessions.
+      // Only send product images when the site is live on HTTPS.
+      if (siteUrl.startsWith('https://')) {
+        productData.images = [`${siteUrl}/${product.image.replace(/^\.\//, '')}`];
+      }
+
       lineItems.push({
         price_data: {
           currency,
           unit_amount: Math.round(product.priceAed * 100),
-          product_data: {
-            name: `${product.name} ${selectedStorage}`,
-            description: `${product.status} · ${selectedColor} · ${product.battery}`,
-            images: [`${siteUrl}/${product.image.replace(/^\.\//, '')}`]
-          }
+          product_data: productData
         },
         quantity
       });
@@ -105,8 +112,21 @@ app.post('/api/create-checkout-session', async (request, response) => {
 
     return response.json({ url: session.url });
   } catch (error) {
-    console.error('Stripe Checkout error:', error);
-    return response.status(500).json({ error: 'Unable to create Stripe Checkout session.' });
+    console.error('Stripe Checkout error:', error.message || error);
+    if (error.raw) {
+      console.error('Stripe raw error:', JSON.stringify({
+        type: error.raw.type,
+        code: error.raw.code,
+        param: error.raw.param,
+        message: error.raw.message,
+        requestId: error.raw.requestId,
+        statusCode: error.statusCode
+      }, null, 2));
+    }
+    return response.status(500).json({
+      error: 'Unable to create Stripe Checkout session.',
+      details: error.message || 'Unknown Stripe error'
+    });
   }
 });
 
