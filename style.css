@@ -7233,3 +7233,81 @@ footer { background: linear-gradient(135deg, #000 0%, #020607 55%, #002b28 100%)
         width: min(44vw, 520px) !important;
     }
 }
+
+
+/* ==================== FINAL TOUCH LAYER FIX FOR MOBILE PRODUCT CARDS ==================== */
+#offplanGrid,
+#offplanGrid .product.property-card,
+#offplanGrid .product-info.property-info,
+#offplanGrid .qty-add.product-buy-row,
+#offplanGrid .swatches {
+    position: relative !important;
+    z-index: 20 !important;
+    pointer-events: auto !important;
+}
+#offplanGrid .qty-btn,
+#offplanGrid .add-cart-btn,
+#offplanGrid .property-details-btn,
+#offplanGrid .swatch {
+    position: relative !important;
+    z-index: 10000 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+    cursor: pointer !important;
+}
+#offplanGrid .product-media.property-image,
+#offplanGrid .product-media.property-image *,
+#offplanGrid .product.property-card::before,
+#offplanGrid .product.property-card::after,
+#offplanGrid .product-info.property-info::before,
+#offplanGrid .product-info.property-info::after {
+    pointer-events: none !important;
+}
+@media (max-width: 820px) {
+    .offplan-grid.home-reveal,
+    .offplan-grid.in-view,
+    #offplanGrid.home-reveal,
+    #offplanGrid.in-view {
+        pointer-events: auto !important;
+        filter: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    #offplanGrid .qty-add.product-buy-row {
+        display: flex !important;
+        align-items: stretch !important;
+    }
+    #offplanGrid .qty-btn,
+    #offplanGrid .add-cart-btn,
+    #offplanGrid .property-details-btn,
+    #offplanGrid .swatch {
+        min-height: 38px !important;
+    }
+}
+
+/* Desktop splash sizing: keep the selected splash fully visible and centered on wide screens */
+@media (min-width: 821px) {
+    #appSplash.cougar-image-splash {
+        background: #000 !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    #appSplash .splash-bg {
+        width: min(520px, 34vw) !important;
+        height: min(100vh, 920px) !important;
+        left: 50% !important;
+        top: 50% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: translate(-50%, -50%) !important;
+        background-size: contain !important;
+        background-position: center center !important;
+        background-repeat: no-repeat !important;
+        animation: none !important;
+    }
+    #appSplash .splash-loader-ui {
+        bottom: clamp(30px, 4vh, 48px) !important;
+        width: min(420px, 32vw) !important;
+    }
+}

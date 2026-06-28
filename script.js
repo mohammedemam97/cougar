@@ -1253,6 +1253,95 @@ document.addEventListener('keydown', event => { if (event.key === 'Escape') clos
   grid.addEventListener('click', handle, true);
 })();
 
+
+
+// ABSOLUTE FINAL MOBILE CARD BUTTON FIX: capture card controls at document level before card/layout layers can block them.
+(function initFinalMobileCardButtonFix(){
+  const grid = document.getElementById('offplanGrid');
+  if (!grid) return;
+
+  let lastKey = '';
+  let lastTime = 0;
+
+  function findControl(event) {
+    const target = event.target;
+    if (target && target.closest) {
+      const direct = target.closest('[data-color-swatch], [data-qty-minus], [data-qty-plus], [data-add-cart][data-property-id], .property-details-btn[data-property-id]');
+      if (direct && grid.contains(direct)) return direct;
+    }
+
+    const point = event.changedTouches && event.changedTouches[0] ? event.changedTouches[0] : event;
+    if (typeof point.clientX === 'number' && typeof point.clientY === 'number') {
+      let el = document.elementFromPoint(point.clientX, point.clientY);
+      if (el && el.closest) {
+        const byPoint = el.closest('[data-color-swatch], [data-qty-minus], [data-qty-plus], [data-add-cart][data-property-id], .property-details-btn[data-property-id]');
+        if (byPoint && grid.contains(byPoint)) return byPoint;
+      }
+    }
+    return null;
+  }
+
+  function runControl(control) {
+    const card = control.closest('.property-card');
+    if (!card) return;
+
+    if (control.matches('[data-color-swatch]')) {
+      const selected = control.dataset.colorSwatch || '';
+      card.querySelectorAll('[data-color-swatch]').forEach(button => button.classList.toggle('active', button === control));
+      const select = card.querySelector('[data-color-select]');
+      if (select) select.value = selected;
+      const label = card.querySelector('.product-color');
+      if (label) label.textContent = selected;
+      return;
+    }
+
+    if (control.matches('[data-qty-minus]')) {
+      setCardQuantity(card, getCardQuantity(card) - 1);
+      return;
+    }
+
+    if (control.matches('[data-qty-plus]')) {
+      setCardQuantity(card, getCardQuantity(card) + 1);
+      return;
+    }
+
+    if (control.matches('[data-add-cart][data-property-id]')) {
+      const color = card.querySelector('[data-color-select]')?.value || card.querySelector('[data-color-swatch].active')?.dataset.colorSwatch || '';
+      addToCart(control.dataset.propertyId, getCardQuantity(card), color);
+      return;
+    }
+
+    if (control.matches('.property-details-btn[data-property-id]')) {
+      openPropertyModal(control.dataset.propertyId);
+    }
+  }
+
+  function handler(event) {
+    const control = findControl(event);
+    if (!control) return;
+
+    const key = `${event.type}:${control.dataset.propertyId || control.dataset.colorSwatch || control.textContent.trim()}`;
+    const now = Date.now();
+    if ((event.type === 'click' || event.type === 'touchend') && key === lastKey && now - lastTime < 520) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+      return;
+    }
+
+    lastKey = key;
+    lastTime = now;
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+    runControl(control);
+  }
+
+  document.addEventListener('pointerup', handler, true);
+  document.addEventListener('touchend', handler, { capture: true, passive: false });
+  document.addEventListener('click', handler, true);
+})();
+
 // Scroll animations
 const observer = new IntersectionObserver(entries => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('in-view'); }); }, {threshold:.08, rootMargin:'0px 0px -12% 0px'});
 document.querySelectorAll('.home-reveal, .reveal-item, .glass-card, .contact-detail, .policy-box, .value-card, .process-card, .section-header, .cta .container').forEach(el => observer.observe(el));
