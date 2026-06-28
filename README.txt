@@ -1,22 +1,41 @@
-COUGAR ELECTRONICS - iPhone Store App
-=====================================
+Cougar Electronics - Stripe Checkout cart integration
 
-Included:
-- Home / About / Contact / Privacy pages
-- Same design direction as the uploaded reference app
-- Cougar logo applied
-- 30 iPhone product cards
-- News ticker
-- Product details popup
-- WhatsApp inquiry links
-- PWA manifest and service worker
-- Local SVG product assets
+What changed:
+- Cart checkout no longer goes to WhatsApp.
+- Checkout Now now sends the full cart to a Node.js backend endpoint.
+- The backend creates one Stripe Checkout Session for the total cart order.
+- Product prices are validated on the backend using server/products.js, not from browser prices.
+- Added success.html and cancel.html.
+- Added webhook endpoint: /stripe-webhook.
+- Added .env.example and package.json.
 
-Upload all files to your website root folder.
+Local test:
+1. Install Node.js 18 or newer.
+2. Open this folder in terminal.
+3. Run: npm install
+4. Copy .env.example to .env
+5. Put your Stripe secret key in .env:
+   STRIPE_SECRET_KEY=sk_test_xxx
+6. Set SITE_URL=http://localhost:4242
+7. Run: npm start
+8. Open: http://localhost:4242
+9. Add products to cart and press Checkout Now.
 
-Important for Android/TWA:
-.well-known/assetlinks.json contains a placeholder SHA256 certificate fingerprint.
-Replace REPLACE_WITH_YOUR_APP_SIGNING_SHA256 with your real signing certificate fingerprint before publishing.
+Live hosting:
+- Add these environment variables to your Node hosting provider:
+  STRIPE_SECRET_KEY=sk_live_xxx
+  STRIPE_WEBHOOK_SECRET=whsec_xxx
+  STRIPE_CURRENCY=aed
+  MAX_QTY_PER_ITEM=10
+  SITE_URL=https://your-domain.com
+- Never put sk_test or sk_live inside HTML, CSS, or browser JS.
 
+Stripe webhook:
+- Webhook URL:
+  https://your-domain.com/stripe-webhook
+- Event to listen for:
+  checkout.session.completed
 
-Update: Navbar text colors fixed. Product cards updated to the dark Cougar card style with equal image sizing, color swatches, quantity controls, and add-to-cart in one row.
+Important:
+- Update product prices in server/products.js when you change prices on the website.
+- The frontend uses product IDs and quantities only; the backend decides the real price.
