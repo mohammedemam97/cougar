@@ -1,7 +1,7 @@
 'use strict';
 
 const WHATSAPP_NUMBER = '971504983085';
-const STRIPE_CHECKOUT_ENDPOINT = window.COUGAR_STRIPE_ENDPOINT || '/api/create-checkout-session';
+const STRIPE_CHECKOUT_ENDPOINT = window.COUGAR_STRIPE_ENDPOINT || 'https://rowqunkrinfgjogvlgvh.supabase.co/functions/v1/create-checkout-session';
 const PRODUCTS_PER_PAGE = 10;
 let currentFilter = 'all';
 let currentPage = 1;
@@ -199,7 +199,7 @@ function renderCart() {
 
 function checkoutPayload() {
   return {
-    items: cart.map(item => ({
+    cart: cart.map(item => ({
       id: item.id,
       quantity: item.qty,
       color: item.selectedColor,
