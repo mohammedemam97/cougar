@@ -298,7 +298,22 @@ function handleProductAction(event) {
   }
 }
 
+function preventMobileZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener('gesturestart', event => event.preventDefault(), {passive:false});
+  document.addEventListener('gesturechange', event => event.preventDefault(), {passive:false});
+  document.addEventListener('gestureend', event => event.preventDefault(), {passive:false});
+  document.addEventListener('touchend', event => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 320) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, {passive:false});
+}
+
 function init() {
+  preventMobileZoom();
   renderProducts();
   renderCart();
 
@@ -346,7 +361,7 @@ function init() {
   }
 
   if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
-    navigator.serviceWorker.register('./service-worker.js?v=20260628-mobile-hero-checkout-2').catch(() => {});
+    navigator.serviceWorker.register('./service-worker.js?v=20260629-navbar-blur-nozoom-1').catch(() => {});
   }
 }
 

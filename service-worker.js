@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cougar-stripe-checkout-v1';
+const CACHE_NAME = 'cougar-navbar-blur-nozoom-v2';
 const ASSETS = ['./', './index.html', './success.html', './cancel.html', './style.css', './script.js', './manifest.json', './logo.png', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', event => {
   self.skipWaiting();
