@@ -420,3 +420,10 @@ input,select,textarea{
   .cart-item-side strong{display:none;}
   .cart-mini-qty{width:88px;height:28px;}
 }
+
+.splash-spinner,
+.loading-spinner,
+.loader,
+.splash-loader {
+  display: none !important;
+}
