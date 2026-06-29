@@ -176,25 +176,40 @@ function renderCart() {
   if (!cartItemsEl || !cartTotalEl || !checkoutBtn) return;
   if (!cart.length) {
     cartItemsEl.innerHTML = '<div class="cart-empty">Your cart is empty.</div>';
-    cartTotalEl.textContent = 'Total: AED 0';
+    cartTotalEl.innerHTML = '<span>Total</span><strong>AED 0</strong>';
     checkoutBtn.href = '#products';
     checkoutBtn.setAttribute('aria-disabled', 'true');
-    checkoutBtn.textContent = 'Checkout Now';
+    checkoutBtn.innerHTML = '<span>Checkout Now</span><em>→</em>';
     return;
   }
 
-  cartItemsEl.innerHTML = cart.map(item => `
-    <div class="cart-item">
-      <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}">
-      <div><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.selectedColor)} / ${escapeHtml(item.storage)}</span><small>Qty: ${item.qty} · ${escapeHtml(item.price)}</small></div>
-      <button class="remove-item" type="button" data-remove-key="${escapeHtml(item.key)}" aria-label="Remove item">×</button>
-    </div>`).join('');
+  cartItemsEl.innerHTML = cart.map(item => {
+    const lineTotal = priceNumber(item) * item.qty;
+    return `
+      <div class="cart-item">
+        <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}">
+        <div class="cart-item-info">
+          <strong>${escapeHtml(item.name)}</strong>
+          <span>${escapeHtml(item.storage)} · ${escapeHtml(item.selectedColor)}</span>
+          <small>${escapeHtml(item.price)}</small>
+          <div class="cart-mini-qty" aria-label="Quantity controls">
+            <button type="button" data-cart-minus="${escapeHtml(item.key)}" aria-label="Decrease quantity">−</button>
+            <b>${item.qty}</b>
+            <button type="button" data-cart-plus="${escapeHtml(item.key)}" aria-label="Increase quantity">+</button>
+          </div>
+        </div>
+        <div class="cart-item-side">
+          <button class="remove-item" type="button" data-remove-key="${escapeHtml(item.key)}" aria-label="Remove item">×</button>
+          <strong>AED ${lineTotal.toLocaleString('en-US')}</strong>
+        </div>
+      </div>`;
+  }).join('');
 
   const total = cart.reduce((sum, item) => sum + priceNumber(item) * item.qty, 0);
-  cartTotalEl.textContent = `Total: AED ${total.toLocaleString('en-US')}`;
+  cartTotalEl.innerHTML = `<span>Total</span><strong>AED ${total.toLocaleString('en-US')}</strong>`;
   checkoutBtn.href = '#checkout';
   checkoutBtn.removeAttribute('aria-disabled');
-  checkoutBtn.textContent = 'Checkout Now';
+  checkoutBtn.innerHTML = '<span>Checkout Now</span><em>→</em>';
 }
 
 function checkoutPayload() {
@@ -334,6 +349,25 @@ function init() {
   document.addEventListener('click', event => {
     if (event.target.closest('[data-open-cart]')) openCart();
     if (event.target.closest('[data-close-cart]')) closeCart();
+    const minusCartBtn = event.target.closest('[data-cart-minus]');
+    if (minusCartBtn) {
+      const key = minusCartBtn.dataset.cartMinus;
+      const item = cart.find(entry => entry.key === key);
+      if (item) {
+        item.qty -= 1;
+        if (item.qty <= 0) cart = cart.filter(entry => entry.key !== key);
+        renderCart();
+      }
+    }
+    const plusCartBtn = event.target.closest('[data-cart-plus]');
+    if (plusCartBtn) {
+      const key = plusCartBtn.dataset.cartPlus;
+      const item = cart.find(entry => entry.key === key);
+      if (item) {
+        item.qty = Math.min(99, item.qty + 1);
+        renderCart();
+      }
+    }
     const removeBtn = event.target.closest('[data-remove-key]');
     if (removeBtn) {
       cart = cart.filter(item => item.key !== removeBtn.dataset.removeKey);
@@ -361,7 +395,7 @@ function init() {
   }
 
   if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
-    navigator.serviceWorker.register('./service-worker.js?v=20260629-navbar-blur-nozoom-1').catch(() => {});
+    navigator.serviceWorker.register('./service-worker.js?v=20260629-cart4-splash-1').catch(() => {});
   }
 }
 
