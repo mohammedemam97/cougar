@@ -421,6 +421,11 @@ input,select,textarea{
   .cart-mini-qty{width:88px;height:28px;}
 }
 
+/* Remove extra splash loading circle - keep only the splash image */
+.mobile-splash-progress,
+.mobile-splash-progress span,
+.mobile-splash-progress::after,
+.mobile-splash-progress span::before,
 .splash-spinner,
 .loading-spinner,
 .loader,
